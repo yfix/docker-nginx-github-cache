@@ -1,0 +1,23 @@
+version: '2'
+services:
+  nginx:
+    image: yfix/nginx
+    restart: always
+    ports:
+      - "20980:80"
+    volumes:
+      - ./www:/var/www/default
+      - ./docker/etc/nginx:/etc/nginx
+      - ./docker/var/cache/nginx:/var/cache/nginx
+      - ./docker/var/log/nginx:/var/log/nginx
+      - /usr/share/GeoIP/GeoIP.dat:/usr/share/GeoIP/GeoIP.dat:ro
+      - /usr/share/GeoIP/GeoLiteCity.dat:/usr/share/GeoIP/GeoLiteCity.dat:ro
+
+  logrotate:
+    image: yfix/logrotate
+    restart: always
+    volumes:
+      - ./docker/etc/logrotate.d/:/etc/logrotate.d/
+      - ./docker/etc/logrotate_cron.d/:/etc/cron.d/
+      - ./docker/var/log/:/var/log/
+    
