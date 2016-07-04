@@ -4,7 +4,7 @@ services:
     image: yfix/nginx
     restart: always
     ports:
-      - "20980:80"
+      - "21180:80"
     volumes:
       - ./www:/var/www/default
       - ./docker/etc/nginx:/etc/nginx

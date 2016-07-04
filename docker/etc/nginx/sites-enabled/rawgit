@@ -3,7 +3,7 @@
 # servers configuration
 root /var/www/default;
 limit_req_zone $referer_domain$uri zone=rawgit.throttling:10m rate=10r/s;
-proxy_cache_path /var/cache/nginx/rawgit keys_zone=rawgit.cache:30m;
+proxy_cache_path /var/cache/nginx/rawgit keys_zone=rawgit.cache:30m max_size=10g inactive=3d use_temp_path=off;
 
 # file extension to mime-type mapping
 # kind of workaround because nginx can detect mime-type only for local file
@@ -90,12 +90,17 @@ server {
         limit_req zone=rawgit.throttling;
 
         # caching
+		# https://www.nginx.com/blog/nginx-caching-guide/
         proxy_cache_key "$origin$uri";
         proxy_cache rawgit.cache;
-        proxy_cache_valid any 1m;
-
+        proxy_cache_valid any 30m;
         proxy_http_version 1.1;
         proxy_intercept_errors on;
+		proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+		proxy_cache_revalidate on;
+		proxy_cache_lock on;
+		proxy_cache_methods GET HEAD;
+		proxy_cache_bypass $cookie_nocache $arg_nocache;
         proxy_pass https://$origin;
 
         # we need to hide these headers in order to redefine them
@@ -111,7 +116,7 @@ server {
         # robots, go away!
         add_header X-Robots-Tag none;
         add_header Access-Control-Allow-Origin *;
-        add_header X-Githack-Cache-Status $upstream_cache_status;
+        add_header X-Rawgit-Cache-Status $upstream_cache_status;
         add_header Content-Type $detect_content_type$content_type_charset_string;
     }
 }
