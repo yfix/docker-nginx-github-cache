@@ -1,7 +1,7 @@
 version: '2'
 services:
   nginx:
-    image: yfix/nginx
+    image: r.yfix.net/nginx
     restart: always
     ports:
       - "21180:80"
@@ -14,7 +14,7 @@ services:
       - /usr/share/GeoIP/GeoLiteCity.dat:/usr/share/GeoIP/GeoLiteCity.dat:ro
 
   logrotate:
-    image: yfix/logrotate
+    image: r.yfix.net/logrotate
     restart: always
     volumes:
       - ./docker/etc/logrotate.d/:/etc/logrotate.d/
